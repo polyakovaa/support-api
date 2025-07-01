@@ -1,0 +1,7 @@
+db_host: "mysql_container"
+db_port: 3306
+db_user: "test_user"
+db_password: "test_password"
+db_name: "db_test_name"
+api_port: 8080
+
