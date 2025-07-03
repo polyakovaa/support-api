@@ -6,7 +6,7 @@ type ChartData struct {
 }
 
 type Dataset struct {
-	Label           string `json:"label"`
-	Data            []int  `json:"data"`
-	BackgroundColor string `json:"backgroundColor"`
+	Label           string   `json:"label"`
+	Data            []int    `json:"data"`
+	BackgroundColor []string `json:"backgroundColor"`
 }

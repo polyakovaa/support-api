@@ -4,7 +4,6 @@ import (
 	"askon/support-api/storage"
 	"askon/support-api/utils"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +21,13 @@ func NewHandler(articleStorage *storage.ArticleStorage, ticketStorage *storage.T
 }
 
 func (h *Handler) HandleTicketStates(c *gin.Context) {
-	data, err := h.ticketStorage.GetTicketStates()
+	from, to, err := utils.ParseDate(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data, err := h.ticketStorage.GetTicketStates(from, to)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -33,22 +38,9 @@ func (h *Handler) HandleTicketStates(c *gin.Context) {
 }
 
 func (h *Handler) HandleArticleTimes(c *gin.Context) {
-	fromStr := c.Query("from")
-	toStr := c.Query("to")
-	if fromStr == "" || toStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "'from' and 'to' parameters are required"})
-		return
-	}
-
-	from, err := time.Parse("2006-01-02", fromStr)
+	from, to, err := utils.ParseDate(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid 'from' date format (use YYYY-MM-DD)"})
-		return
-	}
-
-	to, err := time.Parse("2006-01-02", toStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid 'to' date format (use YYYY-MM-DD)"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -63,13 +55,22 @@ func (h *Handler) HandleArticleTimes(c *gin.Context) {
 }
 
 func (h *Handler) HandleArticleTypes(c *gin.Context) {
-	data, err := h.articleStorage.GetArticleType()
+	from, to, err := utils.ParseDate(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data, err := h.articleStorage.GetArticleType(from, to)
+
+	colors := []string{"#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9a9fd9", "#ff8cf9", "#ffffa3", "#a3fffa", "#aced91"}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	chartData := utils.PrepareChartData(data, "Article Types", "#1cc88a")
+	chartData := utils.PrepareChartData(data, "Article Types", colors)
 	c.JSON(http.StatusOK, chartData)
 
 }

@@ -41,10 +41,10 @@ func (a *ArticleStorage) GetArticleTime(from, to time.Time) (map[string]int, err
 	return result, nil
 }
 
-func (a *ArticleStorage) GetArticleType() (map[int]int, error) {
-	query := `SELECT article_type_id, COUNT(*) as count FROM article GROUP BY article_type_id;`
+func (a *ArticleStorage) GetArticleType(from, to time.Time) (map[int]int, error) {
+	query := `SELECT article_type_id, COUNT(*) as count FROM article WHERE create_time BETWEEN ? AND ? GROUP BY article_type_id;`
 
-	rows, err := a.db.Query(query)
+	rows, err := a.db.Query(query, from, to)
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %w", err)
 	}

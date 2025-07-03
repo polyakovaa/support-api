@@ -40,9 +40,9 @@ func main() {
 	articleStorage := storage.NewArticleStorage(db)
 	ticketStorage := storage.NewTicketStorage(db)
 	handler := handlers.NewHandler(articleStorage, ticketStorage)
+	webHandler := handlers.NewWebHandler()
 
 	r := gin.Default()
-	r.LoadHTMLGlob("support-api/templates/*")
 
 	ticketGroup := r.Group("/api/tickets")
 	{
@@ -54,14 +54,17 @@ func main() {
 		articleGroup.GET("/types", handler.HandleArticleTypes)
 		articleGroup.GET("/create-time", handler.HandleArticleTimes)
 	}
+	if _, err := os.Stat("support-api/web/templates/dashboard.html"); err != nil {
+		log.Fatal("Template file not found:", err)
+	}
 
-	/*chartGroup := r.Group("/api/charts")
-	{
-		chartGroup.GET("/tickets-states", h.ChartTicketStatesHandler)
-		chartGroup.GET("/article-type", h.ChartArticleTypeHandler)
-		chartGroup.GET("/create-time", h.ChartArticleTimeHandler)
-		chartGroup.GET("/response-times", h.ChartResponseTimeHandler)
-	}*/
+	if _, err := os.Stat("support-api/web/static/js/charts.js"); err != nil {
+		log.Fatal("JS file not found:", err)
+	}
+
+	r.LoadHTMLGlob("support-api/web/templates/*")
+	r.StaticFS("/static", gin.Dir("/app/support-api/web/static", true))
+	r.GET("/dashboard", webHandler.ShowDashboard)
 
 	log.Printf("Starting server on :%d", cfg.APIPort)
 	if err := r.Run(fmt.Sprintf(":%d", cfg.APIPort)); err != nil {

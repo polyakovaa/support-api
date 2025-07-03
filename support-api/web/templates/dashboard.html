@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
+    <script src="/static/js/charts.js?hash={{.BuildHash}}"></script>
+    <style>
+        .chart-container {
+            width: 50%;
+            margin: 20px auto;
+        }
+        canvas {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #6164b9">Analytics Dashboard on dates: </h1>
+    
+    <div class="chart-container">
+        <canvas id="ticketStatesChart"></canvas>
+    </div>
+    
+    <div class="chart-container">
+        <canvas id="articleTypesChart"></canvas>
+    </div>
+    
+    <div class="chart-container">
+        <canvas id="articleTimesChart"></canvas>
+      </div>
+
+</body>
+</html>

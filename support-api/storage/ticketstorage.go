@@ -2,6 +2,7 @@ package storage
 
 import (
 	"database/sql"
+	"time"
 )
 
 type TicketStorage struct {
@@ -12,10 +13,10 @@ func NewTicketStorage(db *sql.DB) *TicketStorage {
 	return &TicketStorage{db: db}
 }
 
-func (s *TicketStorage) GetTicketStates() (map[int]int, error) {
-	query := ` SELECT ticket_state_id, COUNT(*) as count FROM ticket GROUP BY ticket_state_id;`
+func (s *TicketStorage) GetTicketStates(from time.Time, to time.Time) (map[int]int, error) {
+	query := ` SELECT ticket_state_id, COUNT(*) as count FROM ticket WHERE create_time BETWEEN ? AND ? GROUP BY ticket_state_id;`
 
-	rows, err := s.db.Query(query)
+	rows, err := s.db.Query(query, from, to)
 	if err != nil {
 		return nil, err
 	}
