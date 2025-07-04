@@ -61,3 +61,24 @@ func (a *ArticleStorage) GetArticleType(from, to time.Time) (map[int]int, error)
 
 	return result, nil
 }
+
+func (a *ArticleStorage) GetArticleSender(from, to time.Time) (map[int]int, error) {
+	query := `SELECT article_sender_type_id, COUNT(*) as count FROM article WHERE create_time BETWEEN ? AND ? GROUP BY article_sender_type_id;`
+
+	rows, err := a.db.Query(query, from, to)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+	defer rows.Close()
+
+	result := make(map[int]int)
+	for rows.Next() {
+		var id, count int
+		if err := rows.Scan(&id, &count); err != nil {
+			return nil, fmt.Errorf("scan failed: %w", err)
+		}
+		result[id] = count
+	}
+
+	return result, nil
+}

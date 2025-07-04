@@ -33,3 +33,24 @@ func (s *TicketStorage) GetTicketStates(from time.Time, to time.Time) (map[int]i
 
 	return result, nil
 }
+
+func (s *TicketStorage) GetTicketServices(from time.Time, to time.Time) (map[int]int, error) {
+	query := ` SELECT service_id, COUNT(*) as count FROM ticket WHERE create_time BETWEEN ? AND ? GROUP BY service_id;`
+
+	rows, err := s.db.Query(query, from, to)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make(map[int]int)
+	for rows.Next() {
+		var serviceID, count int
+		if err := rows.Scan(&serviceID, &count); err != nil {
+			return nil, err
+		}
+		result[serviceID] = count
+	}
+
+	return result, nil
+}

@@ -47,19 +47,14 @@ func main() {
 	ticketGroup := r.Group("/api/tickets")
 	{
 		ticketGroup.GET("/states", handler.HandleTicketStates)
+		ticketGroup.GET("/services", handler.HandleTicketServices)
 	}
 
 	articleGroup := r.Group("/api/articles")
 	{
 		articleGroup.GET("/types", handler.HandleArticleTypes)
 		articleGroup.GET("/create-time", handler.HandleArticleTimes)
-	}
-	if _, err := os.Stat("support-api/web/templates/dashboard.html"); err != nil {
-		log.Fatal("Template file not found:", err)
-	}
-
-	if _, err := os.Stat("support-api/web/static/js/charts.js"); err != nil {
-		log.Fatal("JS file not found:", err)
+		articleGroup.GET("/senders", handler.HandleArticleSenders)
 	}
 
 	r.LoadHTMLGlob("support-api/web/templates/*")

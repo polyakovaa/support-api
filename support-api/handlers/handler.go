@@ -37,6 +37,23 @@ func (h *Handler) HandleTicketStates(c *gin.Context) {
 	c.JSON(http.StatusOK, chartData)
 }
 
+func (h *Handler) HandleTicketServices(c *gin.Context) {
+	from, to, err := utils.ParseDate(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data, err := h.ticketStorage.GetTicketServices(from, to)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	chartData := utils.PrepareChartData(data, "Ticket services", "#a461b9")
+	c.JSON(http.StatusOK, chartData)
+}
+
 func (h *Handler) HandleArticleTimes(c *gin.Context) {
 	from, to, err := utils.ParseDate(c)
 	if err != nil {
@@ -50,7 +67,7 @@ func (h *Handler) HandleArticleTimes(c *gin.Context) {
 		return
 	}
 
-	chartData := utils.PrepareChartData(data, "Article Creation Times", "#36b9cc")
+	chartData := utils.PrepareChartData(data, "Article Created count", "#36b9cc")
 	c.JSON(http.StatusOK, chartData)
 }
 
@@ -70,7 +87,28 @@ func (h *Handler) HandleArticleTypes(c *gin.Context) {
 		return
 	}
 
-	chartData := utils.PrepareChartData(data, "Article Types", colors)
+	chartData := utils.PrepareChartData(data, "Article Types count", colors)
+	c.JSON(http.StatusOK, chartData)
+
+}
+
+func (h *Handler) HandleArticleSenders(c *gin.Context) {
+	from, to, err := utils.ParseDate(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	data, err := h.articleStorage.GetArticleSender(from, to)
+
+	colors := []string{"#FF6384", "#36A2EB", "#FFCE56"}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	chartData := utils.PrepareChartData(data, "Article sender types count", colors)
 	c.JSON(http.StatusOK, chartData)
 
 }

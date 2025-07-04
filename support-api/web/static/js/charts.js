@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     updateDashboardTitle();
-
+    initTicketServicesChart();
     initTicketStatesChart();
+    initArticleSendersChart();
     initArticleTypesChart();
     initArticleTimesChart();
 });
@@ -26,7 +27,33 @@ function updateDashboardTitle() {
         titleElement.textContent = `${originalText} ${from} - ${to}`;
     }
 }
+function initTicketServicesChart() {
+    const {from, to} = getUrlParams();
 
+    fetch(`/api/tickets/services?from=${from}&to=${to}`)
+        .then(response => response.json())
+        .then(data => {
+            new Chart(
+                document.getElementById('ticketServicesChart'),
+                {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Ticket Services Distribution'
+                            }
+                        },
+                    }
+                }
+            );
+        });
+}
 
 
 function initTicketStatesChart() {
@@ -78,6 +105,35 @@ function initArticleTypesChart() {
                             title: {
                                 display: true,
                                 text: 'Article Types Distribution'
+                            }
+                        }
+                    }
+                }
+            );
+        });
+}
+
+function initArticleSendersChart() {
+    const {from, to} = getUrlParams();
+
+
+    fetch(`/api/articles/senders?from=${from}&to=${to}`)
+        .then(response => response.json())
+        .then(data => {
+            new Chart(
+                document.getElementById('articleSendersChart'),
+                {
+                    type: 'pie',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Article Senders Distribution'
                             }
                         }
                     }
