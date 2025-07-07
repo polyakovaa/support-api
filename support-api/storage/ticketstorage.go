@@ -2,6 +2,7 @@ package storage
 
 import (
 	"database/sql"
+	"log"
 	"time"
 )
 
@@ -35,7 +36,7 @@ func (s *TicketStorage) GetTicketStates(from time.Time, to time.Time) (map[int]i
 }
 
 func (s *TicketStorage) GetTicketServices(from time.Time, to time.Time) (map[int]int, error) {
-	query := ` SELECT service_id, COUNT(*) as count FROM ticket WHERE create_time BETWEEN ? AND ? GROUP BY service_id;`
+	query := `SELECT service_id, COUNT(*) as count FROM ticket WHERE create_time BETWEEN ? AND ? GROUP BY service_id;`
 
 	rows, err := s.db.Query(query, from, to)
 	if err != nil {
@@ -45,11 +46,16 @@ func (s *TicketStorage) GetTicketServices(from time.Time, to time.Time) (map[int
 
 	result := make(map[int]int)
 	for rows.Next() {
-		var serviceID, count int
+		var count int
+		var serviceID sql.NullInt64
 		if err := rows.Scan(&serviceID, &count); err != nil {
+			log.Printf("Scan error: %v, serviceID: %+v, count: %d", err, serviceID, count)
 			return nil, err
 		}
-		result[serviceID] = count
+		if !serviceID.Valid {
+			continue
+		}
+		result[int(serviceID.Int64)] = count
 	}
 
 	return result, nil

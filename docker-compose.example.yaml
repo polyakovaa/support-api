@@ -4,7 +4,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_HOST: my-mysql
+      DB_HOST: my-mysql-container
       DB_USER: support_user
       DB_PASSWORD: ${DB_PASSWORD}
     networks:
