@@ -1,5 +1,6 @@
 .env
 sqlfile/
 docker-compose.dev.yaml
+docker-compose.prod.yaml
 *.exe
 config.yaml
